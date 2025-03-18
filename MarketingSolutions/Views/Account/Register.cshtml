@@ -60,24 +60,26 @@
             var flag = true;
             if ($("#userName").val() == "") { 
                 ShowMessage("User Name is Required!", MessageType.Validation);
-                return;
+                return false;
             }
             if ($("#email").val() == "") {
                 ShowMessage("Email is Required!", MessageType.Validation);
-                return;
+                return false;
             }
             if ($("#password").val() == "") {
                 ShowMessage("Password is Required!", MessageType.Validation);
-                return;
+                return false;
             }
             if ($("#confirmPassword").val() == "") {
                 ShowMessage("Confirm Password is Required!", MessageType.Validation);
-                return;
+                return false;
             }
             if ($("#confirmPassword").val() != $("#password").val()) {
                 ShowMessage("Password and Confirm Password not Matched.", MessageType.Validation);
-                return;
+                return false;
             }
+
+            return flag;
         }
         function SubmitRegistration() { 
             if (!RegisterValidation()) { 
