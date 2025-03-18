@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "User Registration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .register-container {
+        max-width: 400px;
+        margin: 50px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .btn-container {
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <div class="register-container py-5">
+        <h3 class="text-center">User Registration</h3>
+        <div class="col-12 form-group">
+            <label class="">Username</label>
+            <input class="form-control" type="text" id="userName" placeholder="example" required>
+        </div>
+        <div class="col-12 form-group">
+            <label class="">Email</label>
+            <input class="form-control" type="email" id="email" placeholder="example@gmail.com" required>
+        </div>
+        <div class="col-12 form-group">
+            <label class="">Password</label>
+            <input class="form-control" type="password" id="password" placeholder="#$Hello123" required>
+        </div>
+        <div class="col-12 form-group">
+            <label class="">Confirm Password</label>
+            <input class="form-control" type="password" id="confirmPassword" placeholder="Same as Password" required>
+        </div>
+        <div class="btn-container">
+            <button type="button" id="registerBtn" onclick="SubmitRegistration()" class="btn btn-primary btn-sm mt-3"><i class="fa-regular fa-circle-user"></i> Register </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+        });
+        function RegisterValidation(){
+            var flag = true;
+            if ($("#userName").val() == "") { 
+                ShowMessage("User Name is Required!", MessageType.Validation);
+                return;
+            }
+            if ($("#email").val() == "") {
+                ShowMessage("Email is Required!", MessageType.Validation);
+                return;
+            }
+            if ($("#password").val() == "") {
+                ShowMessage("Password is Required!", MessageType.Validation);
+                return;
+            }
+            if ($("#confirmPassword").val() == "") {
+                ShowMessage("Confirm Password is Required!", MessageType.Validation);
+                return;
+            }
+            if ($("#confirmPassword").val() != $("#password").val()) {
+                ShowMessage("Password and Confirm Password not Matched.", MessageType.Validation);
+                return;
+            }
+        }
+        function SubmitRegistration() { 
+            if (!RegisterValidation()) { 
+                return;
+            }
+        }
+    
+    </script>
+}
