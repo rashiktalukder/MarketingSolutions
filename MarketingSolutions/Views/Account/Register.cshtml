@@ -85,6 +85,33 @@
             if (!RegisterValidation()) { 
                 return;
             }
+
+            var registerObj = {
+                UserName: $("#userName").val(),
+                Email: $("#email").val(),
+                Password: $("#password").val(),
+                ConfirmPassword: $("#confirmPassword").val()
+            }
+
+            $.ajax({
+                url: "/Account/UserRegistration",
+                type: "POST",
+                dataType: "json",
+                data: { RegistrationObj: registerObj },
+                success: function (response) {
+                    debugger;
+                    if (response.success){
+                        ShowMessage(response.message, MessageType.Create)
+                    }
+                    else
+                    {
+                        ShowMessage(response.message, MessageType.Error)
+                    }
+                },
+                error: function (error) {
+                    ShowMessage(error.message, MessageType.Error, false, '');
+                }
+            });
         }
     
     </script>
