@@ -1,10 +1,11 @@
+using MarketingSolutions.Helper;
 using MarketingSolutions.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace MarketingSolutions.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
 
@@ -15,6 +16,15 @@ namespace MarketingSolutions.Controllers
 
         public IActionResult Index()
         {
+            /*if(!CommonHelper.IsUserAuthenticated(HttpContext))
+            {
+                return RedirectToAction("Login","Account");
+            }*/
+
+            // Get the username from the session
+            var username = CommonHelper.GetUsername(HttpContext);
+            ViewBag.Username = username;
+
             return View();
         }
 

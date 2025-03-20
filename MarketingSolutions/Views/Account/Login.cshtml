@@ -1,0 +1,101 @@
+﻿<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .login-container {
+        max-width: 400px;
+        margin: 50px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .btn-container {
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <div class="login-container py-5">
+        <h3 class="text-center">User Login</h3>
+        <div class="col-12 form-group">
+            <label class="">Email</label>
+            <input class="form-control" type="email" id="email" placeholder="example@gmail.com" required>
+        </div>
+        <div class="col-12 form-group">
+            <label class="">Password</label>
+            <input class="form-control" type="password" id="password" placeholder="Enter Password" required>
+        </div>
+        <div class="col-12 form-group form-check">
+            <input class="form-check-input" type="checkbox" id="rememberMe">
+            <label class="form-check-label">Remember Me</label>
+        </div>
+        <div class="btn-container">
+            <button type="button" id="loginBtn" onclick="SubmitLogin()" class="btn btn-primary btn-sm mt-3">
+                <i class="fa-solid fa-right-to-bracket"></i> Login
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+        });
+        function LoginValidation() {
+            var flag = true;
+            
+            if ($("#email").val() == "") {
+                ShowMessage("Email is Required!", MessageType.Validation);
+                return false;
+            }
+            if ($("#password").val() == "") {
+                ShowMessage("Password is Required!", MessageType.Validation);
+                return false;
+            }
+
+            return flag;
+        }
+        function SubmitLogin() {
+            if (!LoginValidation()) {
+                return;
+            }
+
+            var loginUserObj = {
+                Email: $("#email").val(),
+                Password: $("#password").val(),
+                RememberMe: $('#rememberMe').is(':checked')
+            }
+
+            $.ajax({
+                url: "/Account/UserLogin",
+                type: "POST",
+                dataType: "json",
+                data: { LoginObj: loginUserObj },
+                success: function (response) {
+                    if (response.success) {
+
+                        window.location.href = "/Home/Index";
+
+                        //ShowMessage(response.message, MessageType.Info)
+                    }
+                    else {
+                        ShowMessage(response.errors.message, MessageType.Error)
+                    }
+                },
+                error: function (error) {
+                    ShowMessage(error.message, MessageType.Error, false, '');
+                }
+            });
+        }
+
+    </script>
+}

@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    bool isAuthenticated = MarketingSolutions.Helper.CommonHelper.IsUserAuthenticated(HttpContextAccessor.HttpContext);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -30,6 +37,14 @@
                         </li>
                     </ul>
                 </div>
+                @if (isAuthenticated)
+                {
+                    <a href="@Url.Action("Logout", "Account")" class="btn bg-transparent float-end">
+                        Log Out <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </a>
+                }
+                
+
             </div>
         </nav>
     </header>
