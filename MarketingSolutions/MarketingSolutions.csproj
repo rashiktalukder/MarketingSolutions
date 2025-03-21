@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="DtoModels\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
   <ItemGroup>

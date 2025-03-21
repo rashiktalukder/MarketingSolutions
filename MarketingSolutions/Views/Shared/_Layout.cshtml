@@ -1,8 +1,9 @@
-﻿@using Microsoft.AspNetCore.Http
+﻿﻿@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
     bool isAuthenticated = MarketingSolutions.Helper.CommonHelper.IsUserAuthenticated(HttpContextAccessor.HttpContext);
+    string userName = MarketingSolutions.Helper.CommonHelper.GetUsername(HttpContextAccessor.HttpContext);
 }
 
 <!DOCTYPE html>
@@ -10,62 +11,116 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MarketingSolutions</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.0/dist/sweetalert2.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/MarketingSolutions.styles.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - MarketingManagerApp</title>
+
+    <!-- Tabler CSS from CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.0.0-beta17/dist/css/tabler.min.css" />
+
+    <!-- Font Awesome CSS from CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <!-- Custom CSS (if any) -->
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MarketingSolutions</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+<body class="antialiased">
+    <div class="page">
+        <!-- Header with Horizontal Navbar -->
+        <header class="navbar navbar-expand-md navbar-light d-print-none">
+            <div class="container-xl">
+                <!-- Brand Logo -->
+                <a href="/Home/Index" class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                    <img src="~/images/marketingSolutionLogo.png" width="140" height="70" alt="Tabler" class="navbar-brand-image">
+                </a>
+
+                <!-- Navbar Toggler for Mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <!-- Navbar Menu -->
+                <div class="collapse navbar-collapse" id="navbar-menu">
+                    <ul class="navbar-nav">
+                        @* <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <i class="fas fa-home"></i>
+                                </span>
+                                <span class="nav-link-title">Home</span>
+                            </a>
+                        </li> *@
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" href="/Home/Dashboard">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </span>
+                                <span class="nav-link-title">Dashboard</span>
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        <!-- Add more menu items here -->
                     </ul>
                 </div>
-                @if (isAuthenticated)
-                {
-                    <a href="@Url.Action("Logout", "Account")" class="btn bg-transparent float-end">
-                        Log Out <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    </a>
+
+                <!-- User Dropdown -->
+                @{
+                    if(isAuthenticated)
+                    {
+                        <div class="navbar-nav flex-row order-md-last">
+                            <div class="nav-item dropdown">
+                                <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown">
+                                    <span class="avatar avatar-sm" style="background-image: url(https://tabler.io/static/avatars/000m.jpg)"></span>
+                                    <div class="d-none d-xl-block ps-2">
+                                        <div>@userName</div>
+                                        <div class="mt-1 small text-muted">Marketing Manager</div>
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    @* <a class="dropdown-item" href="#">Profile</a>
+                                    // <a class="dropdown-item" href="#">Settings</a>*@
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="/Account/Logout">Logout</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 }
                 
-
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        </header>
+
+        <!-- Content -->
+        <div class="page-wrapper">
+            <div class="container-xl">
+                @RenderBody()
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer footer-transparent d-print-none">
+            <div class="container-xl">
+                <div class="row text-center align-items-center">
+                    <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                        <ul class="list-inline list-inline-dots mb-0">
+                            <li class="list-inline-item">© 2025 Marketing Solutions. All Rights Reserved!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - MarketingSolutions - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery from CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.0/dist/sweetalert2.min.js"></script>
-    <script src="~/js/AlertMessage/SweetAlert.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Tabler JS from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
+
+    <!-- Custom JS (if any) -->
+    <script src="~/js/site.js"></script>
+
+    <!-- Render optional Scripts section -->
+    @if (IsSectionDefined("Scripts"))
+    {
+        @RenderSection("Scripts", required: false)
+    }
 </body>
 </html>
