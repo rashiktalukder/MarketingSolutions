@@ -2,6 +2,209 @@
     ViewData["Title"] = "Company";
 }
 
-<div class="">
-    <h1> Company List </h1>
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xs" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="headerText">Company Create</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input type="text" id="Id" hidden />
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="companyname" class="required">Company Name</label>
+                            <input type="text" id="companyName" class="form-control" placeholder="Please Enter Company Name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-right">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="CloseCompanyModal()">Close</button>
+                    <button type="submit" onclick="CreateCompany()" class="btn btn-primary btn-sm" id="saveBtn">
+                        <div id="saveSpinner" class="spinner-border spinner-border-sm hidden" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>Save
+                    </button>
+
+                    //for update
+                    <button type="submit" onclick="DeleteCompany()" class="btn btn-danger btn-sm hidden" id="deleteBtn">
+                        <div id="deleteSpinner" class="spinner-border spinner-border-sm hidden" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>Update
+                    </button>
+                    <button type="submit" onclick="UpdateCompany()" class="btn btn-primary btn-sm hidden" id="updateBtn">
+                        <div id="updateSpinner" class="spinner-border spinner-border-sm hidden" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>Update
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div class="row mt-3">
+    <div class="card">
+        <div class="card-header justify-content-between">
+            <h1> Company List </h1>
+            <button class="btn btn-primary btn-md" id="companyAddBtn" onclick="OpenCompanyCreateModal()"><i class="fa fa-light fa-plus-circle px-2"></i> Add Company</button>
+        </div>
+        <div class="card-body">
+            <div>
+                <table id="companyListTable" class="table table-striped table-bordered table-hover table-sm table-responsive-sm" cellspacing="5" width="100%"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        var tableCompanyContainer;
+
+        $(document).ready(function () {
+            
+            createDataTable();
+        });
+
+        function OpenCompanyCreateModal()
+        {
+            ClearModal();
+            $("#createModal").modal('show');
+        }
+
+        function ClearModal()
+        {
+            $("#Id").val("");
+            $("#companyName").val("");
+        }
+
+        function CompanyCreationValidation() {
+            var flag = true;
+            if ($("#companyName").val() == "") {
+                ShowMessage("Company Name is Required!", MessageType.Validation);
+                return false;
+            }            
+
+            return flag;
+        }
+
+        function CreateCompany() {
+            if (!CompanyCreationValidation()) {
+                return;
+            }
+
+            var compObj = {
+                Name: $("#companyName").val()
+            }
+
+            $("#saveSpinner").removeClass('hidden');
+            $("#saveBtn").attr('disabled', true);
+
+            $.ajax({
+                url: "/Companies/Create",
+                type: "POST",
+                dataType: "json",
+                data: { companyObj: compObj },
+                success: function (response) {
+                    $("#saveSpinner").addClass('hidden');
+                    $("#saveBtn").attr('disabled', false);
+                    if (response.success) {
+                        ShowMessage(response.message, MessageType.Create)
+                    }
+                    else {
+                        ShowMessage(response.message, MessageType.Validation)
+                    }
+                },
+                error: function (error) {
+                    ShowMessage(error.message, MessageType.Error);
+                }
+            });
+        }
+
+        function createDataTable() {
+            tableCompanyContainer = $('#companyListTable').DataTable({
+                responsive: false,
+                serverSide: false,
+                searching: true,
+                "bAutoWidth": false,
+                "bDestroy": true,
+                sAjaxDataProp: "values",
+                lengthMenu: [[10, 20, 50, -1], [10, 20, 50, "All"]],
+                ajax: {
+                    url: "/Companies/GetCompanyList",
+                    type: "GET",
+                },
+                columnDefs: [
+                     { width: '70%', targets: 1 }, { width: '30%', targets: 2 }
+                ],
+                "fnServerParams": function (aoData) { },
+                "order": [[1, "desc"]],
+                "createdRow": function (row, data, rowIndex) {
+                    
+                    $.each($('td', row), function (colIndex) {
+                        $(this).attr('title', $(this).text());
+                    });
+                },
+                "initComplete": function (settings, json) {
+                    //departmentList = json.Values;
+                },
+                aoColumns: [
+                    {
+                        sTitle: "Company Id",
+                        // mDataProp: "Id",
+                        className: "text-center",
+                        visible: false,
+                        "mRender": function (data, type, full) {
+                            
+                            return full.id;
+                        }
+                    },
+                    {
+                        sTitle: "Company",
+                        "mRender": function (data, type, full) {
+
+                            var compName = "<span style='background-color: transparent; border: none;' type='text' id='companyName_" + full.id + "' class='form-control'>" + full.name + "</span>";
+                            return compName;
+                        }
+                    },
+                    {
+                        sTitle: "Action",
+                        sClass: "text-center",
+                        "mRender": function (data, type, full) {
+                            var btnGrS = '<div class="btn-group" role="group">';
+
+                            var productsButton = '<button id="btnProducts_' + full.id + '" class="btn btn-info btn-md rounded me-2" onclick="ProductAddOrSell(\'' + full.id + '\');">' +
+                                ' <span> Products </span>' + '</button>';
+
+                            var updateOrDeleteButton = '<button id="btnupdateOrDeleteCompany_' + full.id + '" class="btn btn-secondary btn-md rounded" onclick="UpdateOrDeleteCompany(\'' + full.id + '\');">' + '<i class="fas fa-edit"></i> <span>Update / Delete</span>' + '</button>';
+
+                            var btnGrE = '</div>';
+
+                            return btnGrS + productsButton + updateOrDeleteButton + btnGrE;
+                        },
+                        className: "text-center"
+
+                    }
+                ]
+            });
+
+        }
+
+        function UpdateOrDeleteCompany(id) {
+            debugger;
+            var xxx = "#companyName_" + id;
+            let compName = $("#companyName_" + id).val();
+            $("#Id").val(id);
+            $("#companyName").val(compName);
+            $("#deleteBtn").removeClass('hidden');
+            $("#updateBtn").removeClass('hidden');
+            $("#saveBtn").addClass('hidden');
+            $("#createModal").modal('show');
+        }
+
+    </script>
+}

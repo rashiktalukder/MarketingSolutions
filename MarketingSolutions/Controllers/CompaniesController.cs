@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MarketingSolutions.Controllers
 {
-    public class CompaniesController : Controller
+    public class CompaniesController : BaseController
     {
         private readonly ApplicationDbContext dbContext;
 
@@ -33,17 +33,19 @@ namespace MarketingSolutions.Controllers
         {
             if(string.IsNullOrEmpty(companyObj.Name))
             {
-                return Json(new { success = false, errors = new { message = "Company Name is Empty." } });
+                return Json(new { Success = false, Message = "Company Name is Empty." });
             }
             var isExist = await dbContext.Companies.AnyAsync(x=>x.Name.ToLower() == companyObj.Name.ToLower() && CommonHelper.GetUserId(HttpContext) == x.UserId);
             if (isExist)
             {
-                return Json(new { success = false, errors = new { message = "This Company Name is Already Exists. Please check the list below." } });
+                return Json(new { Success = false, Message = "This Company Name is Already Exists. Please check the list below." });
             }
+
+            companyObj.UserId = CommonHelper.GetUserId(HttpContext);
 
             await dbContext.AddAsync(companyObj);
             await dbContext.SaveChangesAsync();
-            return Json(new { success = true, Message = $"{companyObj.Name} Added Successfully!" });
+            return Json(new { Success = true, Message = $"{companyObj.Name} Added Successfully!" });
         }
 
         [HttpPut]

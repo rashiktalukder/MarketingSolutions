@@ -21,3 +21,14 @@ html, body {
     padding: 1rem 0; /* Add some padding */
     margin-top: auto; /* Push the footer to the bottom */
 }
+
+/* Global style for required fields */
+.required::after {
+    content: " *";
+    color: red; /* Red color for asterisk */
+    font-weight: bold; /* Optional: make it bold */
+}
+
+.hidden{
+    display:none;
+}
