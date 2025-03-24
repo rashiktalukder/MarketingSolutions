@@ -38,7 +38,7 @@ namespace MarketingSolutions.Controllers
             var isExist = await dbContext.Companies.AnyAsync(x=>x.Name.ToLower() == companyObj.Name.ToLower() && CommonHelper.GetUserId(HttpContext) == x.UserId);
             if (isExist)
             {
-                return Json(new { Success = false, Message = "This Company Name is Already Exists. Please check the list below." });
+                return Json(new { Success = false, Message = "This Company Name is Already Exists.<br/> Please check the list below." });
             }
 
             companyObj.UserId = CommonHelper.GetUserId(HttpContext);
@@ -55,6 +55,8 @@ namespace MarketingSolutions.Controllers
             {
                 return Json(new { success = false, message = "Company Not Found!" });
             }
+
+            company.UserId = CommonHelper.GetUserId(HttpContext);
 
             dbContext.Companies.Update(company);
             await dbContext.SaveChangesAsync();

@@ -14,28 +14,28 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="companyname" class="required">Company Name</label>
-                            <input type="text" id="companyName" class="form-control" placeholder="Please Enter Company Name" />
+                            <input type="text" id="companyName" class="form-control mt-2" placeholder="Please Enter Company Name" />
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <div class="text-right">
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="CloseCompanyModal()">Close</button>
-                    <button type="submit" onclick="CreateCompany()" class="btn btn-primary btn-sm" id="saveBtn">
+                    <button type="button" class="btn btn-secondary btn-md" onclick="CloseCompanyModal()">Close</button>
+                    <button type="submit" onclick="CreateCompany()" class="btn btn-primary btn-md" id="saveBtn">
                         <div id="saveSpinner" class="spinner-border spinner-border-sm hidden" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>Save
                     </button>
 
-                    //for update
-                    <button type="submit" onclick="DeleteCompany()" class="btn btn-danger btn-sm hidden" id="deleteBtn">
+                    @* for update *@
+                    <button type="submit" onclick="DeleteCompany()" class="btn btn-danger btn-md hidden" id="deleteBtn">
                         <div id="deleteSpinner" class="spinner-border spinner-border-sm hidden" role="status">
                             <span class="sr-only">Loading...</span>
-                        </div>Update
+                        </div>Delete
                     </button>
-                    <button type="submit" onclick="UpdateCompany()" class="btn btn-primary btn-sm hidden" id="updateBtn">
-                        <div id="updateSpinner" class="spinner-border spinner-border-sm hidden" role="status">
+                    <button type="submit" onclick="UpdateCompany()" class="btn btn-primary btn-md hidden" id="updateBtn">
+                        <div id="updateSpinner" class="spinner-border spinner-border-md hidden" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>Update
                     </button>
@@ -73,6 +73,11 @@
         function OpenCompanyCreateModal()
         {
             ClearModal();
+
+            $("#deleteBtn").addClass('hidden');
+            $("#updateBtn").addClass('hidden');
+            $("#saveBtn").removeClass('hidden');
+
             $("#createModal").modal('show');
         }
 
@@ -80,6 +85,11 @@
         {
             $("#Id").val("");
             $("#companyName").val("");
+        }
+
+        function CloseCompanyModal() {
+            ClearModal();
+            $("#createModal").modal('hide');
         }
 
         function CompanyCreationValidation() {
@@ -113,7 +123,45 @@
                     $("#saveSpinner").addClass('hidden');
                     $("#saveBtn").attr('disabled', false);
                     if (response.success) {
-                        ShowMessage(response.message, MessageType.Create)
+                        tableCompanyContainer.ajax.reload();
+                        ShowMessage(response.message, MessageType.Create);
+                        CloseCompanyModal();
+                    }
+                    else {
+                        ShowMessage(response.message, MessageType.Validation)
+                    }
+                },
+                error: function (error) {
+                    ShowMessage(error.message, MessageType.Error);
+                }
+            });
+        }
+
+        function UpdateCompany() {
+            if (!CompanyCreationValidation()) {
+                return;
+            }
+            
+            var compUpdateObj = {
+                id: $("#Id").val(),
+                Name: $("#companyName").val()
+            }
+
+            $("#updateSpinner").removeClass('hidden');
+            $("#updateBtn").attr('disabled', true);
+
+            $.ajax({
+                url: "/Companies/Update",
+                type: "PUT",
+                dataType: "json",
+                data: { company: compUpdateObj },
+                success: function (response) {
+                    $("#updateSpinner").addClass('hidden');
+                    $("#updateBtn").attr('disabled', false);
+                    if (response.success) {
+                        tableCompanyContainer.ajax.reload();
+                        ShowMessage(response.message, MessageType.Edit)
+                        CloseCompanyModal();
                     }
                     else {
                         ShowMessage(response.message, MessageType.Validation)
@@ -195,15 +243,43 @@
         }
 
         function UpdateOrDeleteCompany(id) {
-            debugger;
-            var xxx = "#companyName_" + id;
-            let compName = $("#companyName_" + id).val();
+            let compName = $("#companyName_" + id).text();
             $("#Id").val(id);
             $("#companyName").val(compName);
             $("#deleteBtn").removeClass('hidden');
             $("#updateBtn").removeClass('hidden');
             $("#saveBtn").addClass('hidden');
             $("#createModal").modal('show');
+        }
+
+        function DeleteCompany()
+        {
+            let compId = $("#Id").val();
+
+            $("#deleteSpinner").removeClass('hidden');
+            $("#deleteBtn").attr('disabled', true);
+
+            $.ajax({
+                url: "/Companies/Delete",
+                type: "DELETE",
+                dataType: "json",
+                data: { companyId: compId },
+                success: function (response) {
+                    $("#deleteSpinner").addClass('hidden');
+                    $("#deleteBtn").attr('disabled', false);
+                    if (response.success) {
+                        tableCompanyContainer.ajax.reload();
+                        ShowMessage(response.message, MessageType.Delete);
+                        CloseCompanyModal();
+                    }
+                    else {
+                        ShowMessage(response.message, MessageType.Validation)
+                    }
+                },
+                error: function (error) {
+                    ShowMessage(error.message, MessageType.Error);
+                }
+            });
         }
 
     </script>
