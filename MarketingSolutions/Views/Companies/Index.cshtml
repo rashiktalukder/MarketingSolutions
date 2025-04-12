@@ -299,9 +299,9 @@
             });
         }
 
-        function ProductAddOrSell() {
+        function ProductAddOrSell(compId) {
             //$("#prodBuySellModal").modal('show');
-            window.location.href = "/Products/Index";
+            window.location.href = "/Products/Index?companyId=" + compId;
         }
     </script>
 }

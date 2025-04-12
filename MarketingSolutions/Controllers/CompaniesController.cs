@@ -23,7 +23,8 @@ namespace MarketingSolutions.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCompanyList()
         {
-            var companyList = await dbContext.Companies.ToListAsync();
+            var userId = CommonHelper.GetUserId(HttpContext);
+            var companyList = await dbContext.Companies.Where(x=>x.UserId == userId).ToListAsync();
 
             return Json(new { success = true, Message = $"Company list got Successfully!", values = companyList });
         }
@@ -43,7 +44,7 @@ namespace MarketingSolutions.Controllers
 
             companyObj.UserId = CommonHelper.GetUserId(HttpContext);
 
-            await dbContext.AddAsync(companyObj);
+            await dbContext.Companies.AddAsync(companyObj);
             await dbContext.SaveChangesAsync();
             return Json(new { Success = true, Message = $"{companyObj.Name} Added Successfully!" });
         }
