@@ -29,5 +29,14 @@ namespace MarketingSolutions.Controllers
             await dbContext.SaveChangesAsync();
             return Json(new { Success = true, Message = $"{productObj.Name} Added Successfully!" });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProducts()
+        {
+            var userId = CommonHelper.GetUserId(HttpContext);
+            var productList = await dbContext.Products.Where(x => x.UserId == userId).ToListAsync();
+
+            return Json(new { success = true, Message = $"Product list got Successfully!", values = productList });
+        }
     }
 }

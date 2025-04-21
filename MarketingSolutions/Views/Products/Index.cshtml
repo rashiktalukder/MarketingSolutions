@@ -2,9 +2,9 @@
     ViewData["Title"] = "Products Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome @ViewBag.Username, Here is Products List!</h1>
-</div>
+@* <div class="text-center">
+    <h5 class="display-4">Welcome, Here is Products List!</h5>
+</div> *@
 
 <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xs" role="document">
@@ -87,8 +87,8 @@
             <button class="btn btn-primary btn-md" id="productAddBtn" onclick="OpenProductCreateModal()"><i class="fa fa-light fa-plus-circle px-2"></i> Add Product</button>
         </div>
         <div class="card-body">
-            <div>
-                <table id="productListTable" class="table table-striped table-bordered table-hover table-sm table-responsive-sm cell-border" cellspacing="5" width="100%"></table>
+            <div class="row">
+                <table id="productListTable" class="table customTableCSS table-striped table-hover cell-border" cellspacing="5" width="100%"></table>
             </div>
         </div>
     </div>
@@ -98,10 +98,10 @@
     <script type="text/javascript">
 
         let companyId = '@ViewBag.CompanyId';
+        var tableProductsContainer;
 
         $(document).ready(function () {
-
-            //createDataTable();
+            createDataTable();
         });
 
         function OpenProductCreateModal() {
@@ -114,7 +114,7 @@
             $("#createModal").modal('show');
         }
 
-        function CloseCompanyModal() {
+        function CloseProductModal() {
             ClearModal();
             $("#createModal").modal('hide');
         }
@@ -181,7 +181,7 @@
                     $("#saveSpinner").addClass('hidden');
                     $("#saveBtn").attr('disabled', false);
                     if (response.success) {
-                        //tableCompanyContainer.ajax.reload();
+                        tableProductsContainer.ajax.reload();
                         ShowMessage(response.message, MessageType.Create);
                         CloseProductModal();
                     }
@@ -194,6 +194,168 @@
                 }
             });
         }
-    
+        let serialNo = 0;
+        function createDataTable() {
+            tableProductsContainer = $('#productListTable').DataTable({
+                "scrollX": true,
+                responsive: false,
+                serverSide: false,
+                searching: true,
+                "bAutoWidth": false,
+                "bDestroy": true,
+                sAjaxDataProp: "values",
+                lengthMenu: [[10, 20, 50, -1], [10, 20, 50, "All"]],
+                ajax: {
+                    url: "/Products/GetProducts",
+                    type: "GET",
+                },
+                columnDefs: [
+                    // { width: '70%', targets: 1 }, { width: '30%', targets: 2 }
+                ],
+                "fnServerParams": function (aoData) { },
+                "order": [[1, "asc"]],
+                "createdRow": function (row, data, rowIndex) {
+
+                    $.each($('td', row), function (colIndex) {
+                        $(this).attr('title', $(this).text());
+                    });
+                },
+                "initComplete": function (settings, json) {
+                    
+                },
+                aoColumns: [
+                    {
+                        sTitle: "Serial #",
+                        className: "text-center",
+                        "mRender": function (data, type, full, meta) {
+                            // Use meta.row and meta.settings for correct numbering
+                            var api = new $.fn.dataTable.Api(meta.settings);
+                            var pageInfo = api.page.info();
+                            return pageInfo.start + meta.row + 1;
+                        }
+                    },
+                    {
+                        sTitle: "Product Id",
+                        className: "text-center",
+                        visible: false,
+                        "mRender": function (data, type, full) {
+
+                            return full.id;
+                        }
+                    },
+                    {
+                        sTitle: "Company Id",
+                        className: "text-center",
+                        visible: false,
+                        "mRender": function (data, type, full) {
+
+                            return full.companyId;
+                        }
+                    },
+                    {
+                        sTitle: "Product Name",
+                        className: "text-center text-nowrap",
+                        "mRender": function (data, type, full) {
+
+                            var prodName = "<span style='background-color: transparent; border: none;' type='text' id='prodName_" + full.id + "' class='form-control'>" + full.name + "</span>";
+                            return prodName;
+                        }
+                    },
+                    {
+                        sTitle: "Pack Size",
+                        className: "text-center text-nowrap",
+                        "mRender": function (data, type, full) {
+
+                            var packSize = "<span style='background-color: transparent; border: none;' type='text' id='packSize_" + full.id + "' class='form-control'>" + full.packSize + "</span>";
+                            return packSize;
+                        }
+                    },
+                    {
+                        sTitle: "Quantity",
+                        className: "text-center text-nowrap",
+                        "mRender": function (data, type, full) {
+
+                            var quantity = "<span style='background-color: transparent; border: none;' type='text' id='quantity_" + full.id + "' class='form-control'>" + full.quantity + "</span>";
+                            return quantity;
+                        }
+                    },
+                    {
+                        sTitle: "Sold Out",
+                        className: "text-center text-nowrap",
+                        "mRender": function (data, type, full) {
+
+                            var soldOut = "<span style='background-color: transparent; border: none;' type='text' id='soldOut_" + full.id + "' class='form-control'>" + full.soldQuantity + "</span>";
+                            return soldOut;
+                        }
+                    },
+                    {
+                        sTitle: "Actual Price",
+                        className: "text-center text-nowrap",
+                        "mRender": function (data, type, full) {
+
+                            var actualPrice = "<span style='background-color: transparent; border: none;' type='text' id='actualPrice_" + full.id + "' class='form-control'>" + full.actualPrice + "</span>";
+                            return actualPrice;
+                        }
+                    },
+                    {
+                        sTitle: "Total Actual Price",
+                        className: "text-center text-nowrap",
+                        visible: false,
+                        "mRender": function (data, type, full) {
+
+                            var totalActual = "<span style='background-color: transparent; border: none;' type='text' id='totalActPrice_" + full.id + "' class='form-control'>" + full.totalActualPrice + "</span>";
+                            return totalActual;
+                        }
+                    },
+                    {
+                        sTitle: "Sell Price",
+                        className: "text-center text-nowrap",
+                        "mRender": function (data, type, full) {
+
+                            var sellPrice = "<span style='background-color: transparent; border: none;' type='text' id='sellPrice_" + full.id + "' class='form-control'>" + full.sellPrice + "</span>";
+                            return sellPrice;
+                        }
+                    },
+                    {
+                        sTitle: "Total Sell Price",
+                        className: "text-center text-nowrap",
+                        visible: false,
+                        "mRender": function (data, type, full) {
+
+                            var totalSellPrice = "<span style='background-color: transparent; border: none;' type='text' id='totalSellPrice_" + full.id + "' class='form-control'>" + full.totalSellPrice + "</span>";
+                            return totalSellPrice;
+                        }
+                    },
+                    {
+                        sTitle: "Profit / Loss",
+                        className: "text-center text-nowrap",
+                        "mRender": function (data, type, full) {
+
+                            var profitOrLoss = "<span style='background-color: transparent; border: none;' type='text' id='profitOrLoss_" + full.id + "' class='form-control'>" + full.profitOrLoss + "</span>";
+                            return profitOrLoss;
+                        }
+                    },
+                    {
+                        sTitle: "Action",
+                        sClass: "text-center",
+                        "mRender": function (data, type, full) {
+                            var btnGrS = '<div class="btn-group" role="group">';
+
+                            var productsButton = '<button id="btnProducts_' + full.id + '" class="btn btn-info btn-md rounded me-2" onclick="ProductAddOrSell(\'' + full.id + '\');">' +
+                                ' <span> Products </span>' + '</button>';
+
+                            var updateOrDeleteButton = '<button id="btnupdateOrDeleteCompany_' + full.id + '" class="btn btn-secondary btn-md rounded" onclick="UpdateOrDeleteCompany(\'' + full.id + '\');">' + '<i class="fas fa-edit"></i> <span>Update / Delete</span>' + '</button>';
+
+                            var btnGrE = '</div>';
+
+                            return btnGrS + productsButton + updateOrDeleteButton + btnGrE;
+                        },
+                        className: "text-center"
+
+                    }
+                ]
+            });
+
+        }
     </script>
 }

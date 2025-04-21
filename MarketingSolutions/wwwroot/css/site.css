@@ -32,3 +32,66 @@ html, body {
 .hidden{
     display:none;
 }
+
+
+
+/*Datatable*/
+/* Add this CSS to your wwwroot/css/site.css file */
+/* Reduce padding in DataTables data cells */
+.customTableCSS tbody td {
+    padding-top: 0.25rem !important; /* Adjust top padding */
+    padding-bottom: 0.25rem !important; /* Adjust bottom padding */
+    /* Optional: Keep horizontal padding or adjust */
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    /* Or use shorthand: padding: 0.25rem 0.5rem; */
+}
+
+/* Styles for DataTables Headers */
+.customTableCSS thead th {
+    /* Choose a background color for the header */
+    background-color: #e9ecef; /* Example: A light grey background (Bootstrap's secondary-bg-subtle) */
+    /* background-color: #6c757d; /* Example: A darker grey background (Bootstrap's secondary) */
+    /* background-color: #007bff; /* Example: Bootstrap's primary blue */
+    /* Choose a text color that contrasts well with the background */
+    color: floralwhite; /* Example: Bootstrap's standard dark text color */
+    /* color: #fff; /* Example: White text for a dark background */
+    /* Set the font size */
+    font-size: 1rem; /* Default Bootstrap font size */
+    /* font-size: 1.1rem; /* Slightly larger */
+    /* font-size: 16px; /* Specific pixel size */
+    /* Ensure text is bold */
+    font-weight: bold;
+    /* Add padding for better spacing */
+    padding: 12px 8px; /* Adjust padding as needed */
+    /* Optional: Center the text */
+    text-align: center;
+}
+
+    /* Optional: Style the DataTables sorting icons if they have low contrast */
+    .customTableCSS thead th.sorting,
+    .customTableCSS thead th.sorting_asc,
+    .customTableCSS thead th.sorting_desc {
+        /* Match the text color */
+        color: inherit; /* Inherit the color from the parent th */
+        /* Or set a specific color: color: #fff; */
+    }
+
+    /* Optional: Add a hover effect to the header cells */
+    .customTableCSS thead th:hover {
+        background-color: #dee2e6; /* Example: A slightly darker grey on hover */
+        /* background-color: #5a6268; /* Example: A darker grey on hover */
+        /* background-color: #0056b3; /* Example: A darker blue on hover */
+        cursor: pointer; /* Indicate it's interactive (for sorting) */
+    }
+
+/* Adds space below the DataTables search filter input */
+.dataTables_wrapper .dataTables_filter {
+    margin-bottom: 1rem; /* Or adjust to your desired spacing, e.g., 15px or 20px */
+}
+
+/* Optional: You might also want space above the pagination/info */
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 1rem; /* Or match the margin-bottom value */
+}
